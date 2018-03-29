@@ -1,4 +1,4 @@
 #!/bin/bash
 
-mkdir -p src
-protoc -I .. service.proto --php_out=src
+mkdir -p generated
+protoc -I .. service.proto --php_out=generated

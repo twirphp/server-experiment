@@ -5,12 +5,14 @@
     "license": "MIT",
     "require": {
         "google/protobuf": "^3.5",
-        "guzzlehttp/psr7": "^1.4"
+        "guzzlehttp/psr7": "^1.4",
+        "psr/http-message": "^1.0"
     },
     "autoload": {
         "psr-4": {
-            "Twirphp\\": "src/Twirphp/",
-            "GPBMetadata\\": "src/GPBMetadata/"
+            "": "src/",
+            "Twirphp\\": "generated/Twirphp/",
+            "GPBMetadata\\": "generated/GPBMetadata/"
         }
     }
 }
