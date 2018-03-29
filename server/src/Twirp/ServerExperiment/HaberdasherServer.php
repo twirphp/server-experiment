@@ -7,6 +7,16 @@ use Psr\Http\Message\ServerRequestInterface;
 final class HaberdasherServer
 {
     /**
+     * @var Haberdasher
+     */
+    private $haberdasher;
+
+    public function __construct(Haberdasher $haberdasher)
+    {
+        $this->haberdasher = $haberdasher;
+    }
+
+    /**
      * Handle the request and return a response.
      */
     public function handle(ServerRequestInterface $request)
@@ -36,10 +46,7 @@ final class HaberdasherServer
 
         $size->mergeFromJsonString((string) $request->getBody());
 
-        $hat = new \Twirphp\Server_experiment\Hat();
-        $hat->setSize($size->getInches());
-        $hat->setColor('golden');
-        $hat->setName('crown');
+        $hat = $this->haberdasher->makeHat($size);
 
         $data = $hat->serializeToJsonString();
 
@@ -52,10 +59,7 @@ final class HaberdasherServer
 
         $size->mergeFromString((string) $request->getBody());
 
-        $hat = new \Twirphp\Server_experiment\Hat();
-        $hat->setSize($size->getInches());
-        $hat->setColor('golden');
-        $hat->setName('crown');
+        $hat = $this->haberdasher->makeHat($size);
 
         $data = $hat->serializeToString();
 

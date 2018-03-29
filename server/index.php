@@ -4,7 +4,7 @@ require __DIR__.'/vendor/autoload.php';
 
 $request = \GuzzleHttp\Psr7\ServerRequest::fromGlobals();
 
-$handler = new \Twirp\ServerExperiment\HaberdasherServer();
+$handler = new \Twirp\ServerExperiment\HaberdasherServer(new \Twirp\ServerExperiment\HaberdasherHandler());
 
 $response = $handler->handle($request);
 
