@@ -47,6 +47,8 @@ final class TwirpError implements Error
     public function withMeta($key, $val)
     {
         $this->meta[$key] = $val;
+
+        return $this;
     }
 
     /**
