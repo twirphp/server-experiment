@@ -5,14 +5,14 @@ namespace Twirp;
 
 use Psr\Http\Message\ServerRequestInterface;
 
-final class Server implements RequestHandlerInterface
+final class Server implements RequestHandler
 {
     /**
-     * @var RequestHandlerInterface[]
+     * @var RequestHandler[]
      */
     private $handlers = [];
 
-    public function registerServer($prefix, RequestHandlerInterface $server)
+    public function registerServer($prefix, RequestHandler $server)
     {
         $this->handlers[$prefix] = $server;
     }

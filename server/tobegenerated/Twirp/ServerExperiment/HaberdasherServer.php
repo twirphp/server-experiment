@@ -11,10 +11,10 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Twirp\Context;
 use Twirp\ErrorCode;
-use Twirp\RequestHandlerInterface;
+use Twirp\RequestHandler;
 use Twirp\TwirpError;
 
-final class HaberdasherServer implements RequestHandlerInterface
+final class HaberdasherServer implements RequestHandler
 {
     const PATH_PREFIX = '/twirp/twirphp.server_experiment.Haberdasher/';
 
