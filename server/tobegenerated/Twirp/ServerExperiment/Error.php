@@ -36,24 +36,11 @@ final class Error
             [
                 'Content-Type' => 'application/json', // Error responses are always JSON (instead of protobuf)
             ],
-            self::marshal($e)
+            json_encode([
+                'code' => $e->code(),
+                'msg' => $e->msg(),
+                'meta' => $e->metaMap(),
+            ])
         );
-    }
-
-    /**
-     * Returns JSON from a twirp Error, that can be used as HTTP error response body.
-     * If serialization fails, it will use a descriptive Internal error instead.
-     *
-     * @param \Twirp\Error $e
-     *
-     * @return string
-     */
-    public static function marshal(\Twirp\Error $e)
-    {
-        return json_encode([
-            'code' => $e->code(),
-            'msg' => $e->msg(),
-            'meta' => $e->metaMap(),
-        ]);
     }
 }
