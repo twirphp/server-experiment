@@ -3,7 +3,7 @@
 namespace Twirp\ServerExperiment;
 
 use Psr\Http\Message\ServerRequestInterface;
-use Twirp\ContextSetter;
+use Twirp\Context;
 
 final class HaberdasherServer
 {
@@ -28,8 +28,8 @@ final class HaberdasherServer
     public function handle(ServerRequestInterface $req)
     {
         $ctx = $req->getAttributes();
-        $ctx = ContextSetter::withPackageName($ctx, self::PACKAGE_NAME);
-        $ctx = ContextSetter::withServiceName($ctx, self::SERVICE_NAME);
+        $ctx = Context::withPackageName($ctx, self::PACKAGE_NAME);
+        $ctx = Context::withServiceName($ctx, self::SERVICE_NAME);
 
         if ($req->getMethod() !== 'POST') {
             $msg = sprintf('unsupported method %q (only POST is allowed)', $req->getMethod());
@@ -73,7 +73,7 @@ final class HaberdasherServer
 
     private function handleMakeHatJson(array $ctx, ServerRequestInterface $req)
     {
-        $ctx = ContextSetter::withMethodName($ctx, 'MakeHat');
+        $ctx = Context::withMethodName($ctx, 'MakeHat');
 
         $size = new \Twirphp\Server_experiment\Size();
 
@@ -94,7 +94,7 @@ final class HaberdasherServer
 
     private function handleMakeHatProtobuf(array $ctx, ServerRequestInterface $req)
     {
-        $ctx = ContextSetter::withMethodName($ctx, 'MakeHat');
+        $ctx = Context::withMethodName($ctx, 'MakeHat');
 
         $size = new \Twirphp\Server_experiment\Size();
 

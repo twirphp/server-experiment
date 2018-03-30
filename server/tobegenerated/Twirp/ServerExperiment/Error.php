@@ -3,7 +3,7 @@
 namespace Twirp\ServerExperiment;
 
 use GuzzleHttp\Psr7\Response;
-use Twirp\ContextSetter;
+use Twirp\Context;
 use Twirp\ErrorCode;
 use Twirp\TwirpError;
 
@@ -29,7 +29,7 @@ final class Error
     public static function write(array $ctx, \Twirp\Error $e)
     {
         $statusCode = ErrorCode::serverHTTPStatusFromErrorCode($e->code());
-        $ctx = ContextSetter::withStatusCode($ctx, $statusCode);
+        $ctx = Context::withStatusCode($ctx, $statusCode);
 
         return new Response(
             $statusCode,
