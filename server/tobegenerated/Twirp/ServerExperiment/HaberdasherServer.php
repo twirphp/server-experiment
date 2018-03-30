@@ -145,7 +145,7 @@ final class HaberdasherServer implements RequestHandlerInterface
      *
      * @return ResponseInterface
      */
-    public function writeError(array $ctx, \Twirp\Error $e)
+    private function writeError(array $ctx, \Twirp\Error $e)
     {
         $statusCode = ErrorCode::serverHTTPStatusFromErrorCode($e->code());
         $ctx = Context::withStatusCode($ctx, $statusCode);
