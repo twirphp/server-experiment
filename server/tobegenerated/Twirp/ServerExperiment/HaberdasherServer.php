@@ -2,6 +2,7 @@
 
 namespace Twirp\ServerExperiment;
 
+use Google\Protobuf\Internal\Exception as ProtobufException;
 use Http\Discovery\MessageFactoryDiscovery;
 use Http\Discovery\StreamFactoryDiscovery;
 use Http\Message\MessageFactory;
@@ -9,7 +10,9 @@ use Http\Message\StreamFactory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Twirp\Context;
+use Twirp\ErrorCode;
 use Twirp\RequestHandlerInterface;
+use Twirp\TwirpError;
 
 final class HaberdasherServer implements RequestHandlerInterface
 {
@@ -103,9 +106,19 @@ final class HaberdasherServer implements RequestHandlerInterface
 
         $size = new \Twirphp\Server_experiment\Size();
 
-        $size->mergeFromJsonString((string)$req->getBody());
+        try {
+            $size->mergeFromJsonString((string)$req->getBody());
+        } catch (ProtobufException $e) {
+            return $this->writeError($ctx, TwirpError::internalError('failed to parse request json'));
+        }
 
-        $hat = $this->haberdasher->makeHat($ctx, $size);
+        try {
+            $hat = $this->haberdasher->makeHat($ctx, $size);
+        } catch (\Twirp\Error $e) {
+            return $this->writeError($ctx, $e);
+        } catch (\Exception $e) {
+            return $this->writeError($ctx, TwirpError::internalErrorWith($e));
+        }
 
         $data = $hat->serializeToJsonString();
 
@@ -123,9 +136,19 @@ final class HaberdasherServer implements RequestHandlerInterface
 
         $size = new \Twirphp\Server_experiment\Size();
 
-        $size->mergeFromString((string)$req->getBody());
+        try {
+            $size->mergeFromString((string)$req->getBody());
+        } catch (ProtobufException $e) {
+            return $this->writeError($ctx, TwirpError::internalError('failed to parse request proto'));
+        }
 
-        $hat = $this->haberdasher->makeHat($ctx, $size);
+        try {
+            $hat = $this->haberdasher->makeHat($ctx, $size);
+        } catch (\Twirp\Error $e) {
+            return $this->writeError($ctx, $e);
+        } catch (\Exception $e) {
+            return $this->writeError($ctx, TwirpError::internalErrorWith($e));
+        }
 
         $data = $hat->serializeToString();
 

@@ -2,7 +2,7 @@
 
 namespace Twirp;
 
-final class TwirpError implements Error
+final class TwirpError extends \Exception implements Error
 {
     /**
      * @var string
@@ -23,6 +23,8 @@ final class TwirpError implements Error
     {
         $this->code = $code;
         $this->msg = $msg;
+
+        parent::__construct($msg);
     }
 
     /**
