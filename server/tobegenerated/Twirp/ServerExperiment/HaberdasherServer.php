@@ -2,6 +2,11 @@
 
 namespace Twirp\ServerExperiment;
 
+use Http\Discovery\MessageFactoryDiscovery;
+use Http\Discovery\StreamFactoryDiscovery;
+use Http\Message\MessageFactory;
+use Http\Message\StreamFactory;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Twirp\Context;
 use Twirp\RequestHandlerInterface;
@@ -10,17 +15,37 @@ final class HaberdasherServer implements RequestHandlerInterface
 {
     const PATH_PREFIX = '/twirp/twirphp.server_experiment.Haberdasher/';
 
-    const PACKAGE_NAME = 'twirphp.server_experiment';
-    const SERVICE_NAME = 'Haberdasher';
-
     /**
      * @var Haberdasher
      */
     private $haberdasher;
 
-    public function __construct(Haberdasher $haberdasher)
-    {
+    /**
+     * @var MessageFactory
+     */
+    private $messageFactory;
+
+    /**
+     * @var StreamFactory
+     */
+    private $streamFactory;
+
+    public function __construct(
+        Haberdasher $haberdasher,
+        MessageFactory $messageFactory = null,
+        StreamFactory $streamFactory = null
+    ) {
+        if ($messageFactory === null) {
+            $messageFactory = MessageFactoryDiscovery::find();
+        }
+
+        if ($streamFactory === null) {
+            $streamFactory = StreamFactoryDiscovery::find();
+        }
+
         $this->haberdasher = $haberdasher;
+        $this->messageFactory = $messageFactory;
+        $this->streamFactory = $streamFactory;
     }
 
     /**
@@ -29,13 +54,13 @@ final class HaberdasherServer implements RequestHandlerInterface
     public function handle(ServerRequestInterface $req)
     {
         $ctx = $req->getAttributes();
-        $ctx = Context::withPackageName($ctx, self::PACKAGE_NAME);
-        $ctx = Context::withServiceName($ctx, self::SERVICE_NAME);
+        $ctx = Context::withPackageName($ctx, 'twirphp.server_experiment');
+        $ctx = Context::withServiceName($ctx, 'Haberdasher');
 
         if ($req->getMethod() !== 'POST') {
             $msg = sprintf('unsupported method %q (only POST is allowed)', $req->getMethod());
 
-            return Error::write($ctx, Error::badRoute($msg, $req->getMethod(), $req->getUri()->getPath()));
+            return $this->writeError($ctx, Error::badRoute($msg, $req->getMethod(), $req->getUri()->getPath()));
         }
 
         switch ($req->getUri()->getPath()) {
@@ -45,7 +70,7 @@ final class HaberdasherServer implements RequestHandlerInterface
             default:
                 $msg = sprintf('no handler for path %q', $req->getUri()->getPath());
 
-                return Error::write($ctx, Error::badRoute($msg, $req->getMethod(), $req->getUri()->getPath()));
+                return $this->writeError($ctx, Error::badRoute($msg, $req->getMethod(), $req->getUri()->getPath()));
         }
     }
 
@@ -68,7 +93,7 @@ final class HaberdasherServer implements RequestHandlerInterface
             default:
                 $msg = sprintf('unexpected Content-Type: %q', $req->getHeaderLine('Content-Type'));
 
-                return Error::write($ctx, Error::badRoute($msg, $req->getMethod(), $req->getUri()->getPath()));
+                return $this->writeError($ctx, Error::badRoute($msg, $req->getMethod(), $req->getUri()->getPath()));
         }
     }
 
@@ -78,19 +103,18 @@ final class HaberdasherServer implements RequestHandlerInterface
 
         $size = new \Twirphp\Server_experiment\Size();
 
-        $size->mergeFromJsonString((string) $req->getBody());
+        $size->mergeFromJsonString((string)$req->getBody());
 
         $hat = $this->haberdasher->makeHat($ctx, $size);
 
         $data = $hat->serializeToJsonString();
 
-        return new \GuzzleHttp\Psr7\Response(
-            200,
-            [
-                'Content-Type' => 'application/json',
-            ],
-            $data
-        );
+        $body = $this->streamFactory->createStream($data);
+
+        return $this->messageFactory
+            ->createResponse(200)
+            ->withHeader('Content-Type', 'application/json')
+            ->withBody($body);
     }
 
     private function handleMakeHatProtobuf(array $ctx, ServerRequestInterface $req)
@@ -99,18 +123,42 @@ final class HaberdasherServer implements RequestHandlerInterface
 
         $size = new \Twirphp\Server_experiment\Size();
 
-        $size->mergeFromString((string) $req->getBody());
+        $size->mergeFromString((string)$req->getBody());
 
         $hat = $this->haberdasher->makeHat($ctx, $size);
 
         $data = $hat->serializeToString();
 
-        return new \GuzzleHttp\Psr7\Response(
-            200,
-            [
-                'Content-Type' => 'application/protobuf',
-            ],
-            $data
-        );
+        $body = $this->streamFactory->createStream($data);
+
+        return $this->messageFactory
+            ->createResponse(200)
+            ->withHeader('Content-Type', 'application/protobuf')
+            ->withBody($body);
+    }
+
+    /**
+     * Writes Twirp errors in the response and triggers hooks.
+     *
+     * @param array        $ctx
+     * @param \Twirp\Error $e
+     *
+     * @return ResponseInterface
+     */
+    public function writeError(array $ctx, \Twirp\Error $e)
+    {
+        $statusCode = ErrorCode::serverHTTPStatusFromErrorCode($e->code());
+        $ctx = Context::withStatusCode($ctx, $statusCode);
+
+        $body = $this->streamFactory->createStream(json_encode([
+            'code' => $e->code(),
+            'msg' => $e->msg(),
+            'meta' => $e->metaMap(),
+        ]));
+
+        return $this->messageFactory
+            ->createResponse($statusCode)
+            ->withHeader('Content-Type', 'application/json')// Error responses are always JSON (instead of protobuf)
+            ->withBody($body);
     }
 }

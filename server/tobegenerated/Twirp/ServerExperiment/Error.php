@@ -2,8 +2,6 @@
 
 namespace Twirp\ServerExperiment;
 
-use GuzzleHttp\Psr7\Response;
-use Twirp\Context;
 use Twirp\ErrorCode;
 use Twirp\TwirpError;
 
@@ -24,23 +22,5 @@ final class Error
         $e->withMeta('twirp_invalid_route', $method . ' ' . $url);
 
         return $e;
-    }
-
-    public static function write(array $ctx, \Twirp\Error $e)
-    {
-        $statusCode = ErrorCode::serverHTTPStatusFromErrorCode($e->code());
-        $ctx = Context::withStatusCode($ctx, $statusCode);
-
-        return new Response(
-            $statusCode,
-            [
-                'Content-Type' => 'application/json', // Error responses are always JSON (instead of protobuf)
-            ],
-            json_encode([
-                'code' => $e->code(),
-                'msg' => $e->msg(),
-                'meta' => $e->metaMap(),
-            ])
-        );
     }
 }
