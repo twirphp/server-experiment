@@ -7,7 +7,7 @@ use Twirphp\Server_experiment\Size;
 
 final class HaberdasherHandler implements Haberdasher
 {
-    public function makeHat(Size $size)
+    public function makeHat(array $ctx, Size $size)
     {
         $hat = new Hat();
         $hat->setSize($size->getInches());
