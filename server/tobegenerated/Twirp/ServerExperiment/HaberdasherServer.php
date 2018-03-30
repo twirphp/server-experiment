@@ -4,8 +4,9 @@ namespace Twirp\ServerExperiment;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Twirp\Context;
+use Twirp\RequestHandlerInterface;
 
-final class HaberdasherServer
+final class HaberdasherServer implements RequestHandlerInterface
 {
     const PATH_PREFIX = '/twirp/twirphp.server_experiment.Haberdasher/';
 

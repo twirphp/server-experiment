@@ -4,9 +4,11 @@ require __DIR__.'/vendor/autoload.php';
 
 $request = \GuzzleHttp\Psr7\ServerRequest::fromGlobals();
 
+$server = new \Twirp\Server();
 $handler = new \Twirp\ServerExperiment\HaberdasherServer(new \Twirp\ServerExperiment\HaberdasherHandler());
+$server->registerServer(\Twirp\ServerExperiment\HaberdasherServer::PATH_PREFIX, $handler);
 
-$response = $handler->handle($request);
+$response = $server->handle($request);
 
 if (!headers_sent()) {
 	// status
