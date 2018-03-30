@@ -19,7 +19,7 @@ final class Error
     public static function badRoute($msg, $method, $url)
     {
         $e = TwirpError::newError(ErrorCode::BadRoute, $msg);
-        $e->withMeta('twirp_invalid_route', $method . ' ' . $url);
+        $e = $e->withMeta('twirp_invalid_route', $method . ' ' . $url);
 
         return $e;
     }

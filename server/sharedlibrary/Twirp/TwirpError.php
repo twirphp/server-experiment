@@ -120,7 +120,7 @@ final class TwirpError extends \Exception implements Error
     {
         $e = self::newError(ErrorCode::InvalidArgument, $argument.' '.$validationMsg);
 
-        $e->withMeta('argument', $argument);
+        $e = $e->withMeta('argument', $argument);
 
         return $e;
     }
@@ -167,7 +167,7 @@ final class TwirpError extends \Exception implements Error
     {
         $e = new self(ErrorCode::Internal, $e->getMessage());
 
-        $e->withMeta('cause', $e->getMessage());
+        $e = $e->withMeta('cause', $e->getMessage());
 
         return $e;
     }
