@@ -4,7 +4,6 @@ namespace Twirp\ServerExperiment;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Twirp\ContextSetter;
-use Twirp\Exception\BadRouteException;
 
 final class HaberdasherServer
 {
@@ -35,7 +34,7 @@ final class HaberdasherServer
         if ($req->getMethod() !== 'POST') {
             $msg = sprintf('unsupported method %q (only POST is allowed)', $req->getMethod());
 
-            throw BadRouteException::create($msg, $req->getMethod(), $req->getUri()->getPath());
+            return Error::write($ctx, Error::badRoute($msg, $req->getMethod(), $req->getUri()->getPath()));
         }
 
         switch ($req->getUri()->getPath()) {
@@ -45,7 +44,7 @@ final class HaberdasherServer
             default:
                 $msg = sprintf('no handler for path %q', $req->getUri()->getPath());
 
-                throw BadRouteException::create($msg, $req->getMethod(), $req->getUri()->getPath());
+                return Error::write($ctx, Error::badRoute($msg, $req->getMethod(), $req->getUri()->getPath()));
         }
     }
 
@@ -68,7 +67,7 @@ final class HaberdasherServer
             default:
                 $msg = sprintf('unexpected Content-Type: %q', $req->getHeaderLine('Content-Type'));
 
-                throw BadRouteException::create($msg, $req->getMethod(), $req->getUri()->getPath());
+                return Error::write($ctx, Error::badRoute($msg, $req->getMethod(), $req->getUri()->getPath()));
         }
     }
 
