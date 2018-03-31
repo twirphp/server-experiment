@@ -5,7 +5,7 @@ namespace Twirp\ServerExperiment;
 use Twirphp\Server_experiment\Hat;
 use Twirphp\Server_experiment\Size;
 
-final class HaberdasherHandler implements Haberdasher
+final class HaberdasherHandler implements \Twirphp\Server_experiment\Haberdasher
 {
     public function makeHat(array $ctx, Size $size)
     {

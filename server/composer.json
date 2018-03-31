@@ -15,9 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "": ["src/", "tobegenerated/", "sharedlibrary/", "implementation/"],
-            "Twirphp\\": "generated/Twirphp/",
-            "GPBMetadata\\": "generated/GPBMetadata/"
+            "": ["src/", "generated/", "sharedlibrary/", "implementation/"]
         }
     }
 }
