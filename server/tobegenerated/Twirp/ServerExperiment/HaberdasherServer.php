@@ -33,6 +33,11 @@ final class HaberdasherServer implements RequestHandler
      */
     private $streamFactory;
 
+    /**
+     * @param Haberdasher         $haberdasher
+     * @param MessageFactory|null $messageFactory
+     * @param StreamFactory|null  $streamFactory
+     */
     public function __construct(
         Haberdasher $haberdasher,
         MessageFactory $messageFactory = null,
@@ -181,7 +186,7 @@ final class HaberdasherServer implements RequestHandler
 
         return $this->messageFactory
             ->createResponse($statusCode)
-            ->withHeader('Content-Type', 'application/json')// Error responses are always JSON (instead of protobuf)
+            ->withHeader('Content-Type', 'application/json') // Error responses are always JSON (instead of protobuf)
             ->withBody($body);
     }
 }
