@@ -2,7 +2,7 @@
 
 namespace Twirp\ServerExperiment;
 
-use Google\Protobuf\Internal\Exception as ProtobufException;
+use Google\Protobuf\Internal\GPBDecodeException;
 use Http\Discovery\MessageFactoryDiscovery;
 use Http\Discovery\StreamFactoryDiscovery;
 use Http\Message\MessageFactory;
@@ -113,7 +113,7 @@ final class HaberdasherServer implements RequestHandler
 
         try {
             $size->mergeFromJsonString((string)$req->getBody());
-        } catch (ProtobufException $e) {
+        } catch (GPBDecodeException $e) {
             return $this->writeError($ctx, TwirpError::internalError('failed to parse request json'));
         }
 
@@ -143,7 +143,7 @@ final class HaberdasherServer implements RequestHandler
 
         try {
             $size->mergeFromString((string)$req->getBody());
-        } catch (ProtobufException $e) {
+        } catch (GPBDecodeException $e) {
             return $this->writeError($ctx, TwirpError::internalError('failed to parse request proto'));
         }
 
