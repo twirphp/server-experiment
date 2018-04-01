@@ -4,5 +4,5 @@
 
 ```bash
 $ dep ensure
-$ go run *.go
+$ go run main.go
 ```
