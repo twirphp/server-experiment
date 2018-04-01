@@ -2,10 +2,11 @@
 
 namespace Twirp\ServerExperiment;
 
-use Twirphp\Server_experiment\Hat;
-use Twirphp\Server_experiment\Size;
+use Twitch\Twirp\Example\Haberdasher;
+use Twitch\Twirp\Example\Hat;
+use Twitch\Twirp\Example\Size;
 
-final class HaberdasherHandler implements \Twirphp\Server_experiment\Haberdasher
+final class HaberdasherHandler implements Haberdasher
 {
     public function makeHat(array $ctx, Size $size)
     {

@@ -7,17 +7,18 @@ import (
 	"net/http"
 
 	"github.com/twitchtv/twirp"
+	"github.com/twirphp/server-experiment/client/example"
 )
 
 func main() {
-	client := NewHaberdasherJSONClient("http://localhost:8080", &http.Client{})
+	client := example.NewHaberdasherJSONClient("http://localhost:8080", &http.Client{})
 
 	var (
-		hat *Hat
+		hat *example.Hat
 		err error
 	)
 	for i := 0; i < 5; i++ {
-		hat, err = client.MakeHat(context.Background(), &Size{Inches: 12})
+		hat, err = client.MakeHat(context.Background(), &example.Size{Inches: 12})
 		if err != nil {
 			if twerr, ok := err.(twirp.Error); ok {
 				if twerr.Meta("retryable") != "" {
